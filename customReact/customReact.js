@@ -17,8 +17,6 @@ const domElement = document.createElement(reactElement.type)
  }
     
     container.appendChild(domElement)
-
-
 }
  
 
