@@ -1,6 +1,5 @@
-// ...existing code...
-import Inputbox from './Inputbox';
-// ...existing code...
- export default Inputbox
 
- 
+ import InputBox from "./Inputbox";
+
+ export default InputBox
+
