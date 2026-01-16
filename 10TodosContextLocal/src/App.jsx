@@ -1,7 +1,7 @@
 
 import './App.css'
 import { useState } from 'react'
-import todoProvider from './contexts'
+ 
 
 function App() {
   const [todo, setTodo] = useState()
@@ -33,13 +33,13 @@ function App() {
           </div>
           <div className="flex flex-wrap gap-y-3">
             {/*Loop and Add TodoItem here */}
-            {todos.map((todo) => (
+       {  /*  {todos.map((todo) => (
               <div key={todo.id}
                 className='w-full'
               >
                 <TodoItem todo={todo} />
               </div>
-            ))}
+            ))}*/}
           </div>
         </div>
       </div>
