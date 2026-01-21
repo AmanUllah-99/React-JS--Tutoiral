@@ -1,31 +1,61 @@
-import { useContext } from "react";
-import { ExpenseContext } from "../context/ExpenseContext";
-
-const Summary = ({ month }) => {
-  const { people } = useContext(ExpenseContext);
-
-  const filteredExpenses = (person) =>
-    month
-      ? person.expenses.filter((e) => e.month === month)
-      : person.expenses;
-
-  const totalMonthly = people.reduce((sum, p) => sum + p.monthly, 0);
-  const totalDaily = people.reduce(
-    (sum, p) => sum + filteredExpenses(p).reduce((s, e) => s + e.amount, 0),
+ 
+export default function Summary({
+  roomLedger,
+  dailyExpenses,
+  monthlyCosts,
+}) {
+  // 1️⃣ Initial Room Fund
+  const totalCollected = roomLedger.reduce(
+    (sum, p) => sum + Number(p.paid || 0) - Number(p.took || 0),
     0
   );
-  const grandTotal = totalMonthly + totalDaily;
+
+  // 2️⃣ Total Daily Food Expenses
+  const totalDailyExpenses = dailyExpenses.reduce((sum, d) => {
+    return (
+      sum +
+      Number(d.breakfastCost || 0) +
+      Number(d.lunchCost || 0) +
+      Number(d.dinnerCost || 0)
+    );
+  }, 0);
+
+  // 3️⃣ Total Monthly Fixed Costs
+  const totalMonthlyCosts =
+    Number(monthlyCosts.rent.amount || 0) +
+    Number(monthlyCosts.bills.amount || 0) +
+    Number(monthlyCosts.grocery.amount || 0);
+
+  // 4️⃣ Final Remaining Fund
+  const remainingFund =
+    totalCollected - (totalDailyExpenses + totalMonthlyCosts);
 
   return (
-    <div className="mt-6 p-4 border rounded shadow">
-      <h3 className="font-semibold text-xl mb-2">
-        Summary {month && `(${month})`}
-      </h3>
-      <p>Total Monthly Expense: Rs {totalMonthly}</p>
-      <p>Total Daily Expenses: Rs {totalDaily}</p>
-      <p className="font-bold">Grand Total: Rs {grandTotal}</p>
+    <div className="bg-white p-4 rounded-xl shadow">
+      <h2 className="text-xl font-bold mb-4">Summary</h2>
+
+      <div className="grid md:grid-cols-4 gap-4 text-center">
+        <div className="bg-gray-100 p-3 rounded">
+          <p>Initial Room Fund</p>
+          <strong>{totalCollected} PKR</strong>
+        </div>
+
+        <div className="bg-gray-100 p-3 rounded">
+          <p>Daily Food Expenses</p>
+          <strong>{totalDailyExpenses} PKR</strong>
+        </div>
+
+        <div className="bg-gray-100 p-3 rounded">
+          <p>Monthly Fixed Costs</p>
+          <strong>{totalMonthlyCosts} PKR</strong>
+        </div>
+
+        <div className="bg-green-100 p-3 rounded font-bold">
+          <p>Remaining Fund</p>
+          <strong>{remainingFund} PKR</strong>
+        </div>
+      </div>
     </div>
   );
-};
+}
 
-export default Summary;

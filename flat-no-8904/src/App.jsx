@@ -1,67 +1,58 @@
-import { useContext, useState } from "react";
-import { ExpenseContext } from "./context/ExpenseContext";
-import PersonCard from "./components/PersonCard";
-import DailyExpense from "./components/DailyExpense";
+ 
+import { useState } from "react";
+import RoomLedger from "./components/RoomLedger";
+import DailyExpenses from "./components/DailyExpenses";
+import MonthlyFixedCosts from "./components/MonthlyFixedCosts";
 import Summary from "./components/Summary";
-import ExpenseChart from "./components/ExpenseChart";
 
-const App = () => {
-  const { people } = useContext(ExpenseContext);
-  const [month, setMonth] = useState("");
+function App() {
+  const [roomLedger, setRoomLedger] = useState(() => {
+    const saved = localStorage.getItem("roomLedger");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [dailyExpenses, setDailyExpenses] = useState(() => {
+    const saved = localStorage.getItem("dailyExpenses");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [monthlyCosts, setMonthlyCosts] = useState(() => {
+    const saved = localStorage.getItem("monthlyFixedCosts");
+    return saved
+      ? JSON.parse(saved)
+      : {
+          rent: { name: "", amount: 0 },
+          bills: { name: "", amount: 0 },
+          grocery: { name: "", amount: 0 },
+        };
+  });
 
   return (
-    <div className="max-w-6xl mx-auto p-4">
-      <h1 className="text-3xl font-bold text-center mb-6">
-        Monthly Expense Manager
+    <div className="min-h-screen bg-gray-100 p-6 space-y-6">
+      <h1 className="text-3xl font-bold text-center">
+        Flat Expenses & Ledger Manager
       </h1>
 
-      {/* People Cards */}
-      <div className="grid md:grid-cols-3 gap-4">
-        {people.map((p) => (
-          <PersonCard key={p.id} person={p} />
-        ))}
-      </div>
+      <RoomLedger roomLedger={roomLedger} setRoomLedger={setRoomLedger} />
 
-      {/* Daily Expense Form */}
-      <DailyExpense />
+      <DailyExpenses
+        dailyExpenses={dailyExpenses}
+        setDailyExpenses={setDailyExpenses}
+      />
 
-      {/* Month Selector */}
-      <div className="mt-6">
-        <label className="font-semibold">Select Month: </label>
-        <select
-          value={month}
-          onChange={(e) => setMonth(e.target.value)}
-          className="border p-2 rounded ml-2"
-        >
-          <option value="">All</option>
-          {[
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
-          ].map((m) => (
-            <option key={m} value={m}>
-              {m}
-            </option>
-          ))}
-        </select>
-      </div>
+      <MonthlyFixedCosts
+        monthlyCosts={monthlyCosts}
+        setMonthlyCosts={setMonthlyCosts}
+      />
 
-      {/* Summary */}
-      <Summary month={month} />
-
-      {/* Chart */}
-      <ExpenseChart />
+      <Summary
+        roomLedger={roomLedger}
+        dailyExpenses={dailyExpenses}
+        monthlyCosts={monthlyCosts}
+      />
     </div>
   );
-};
+}
 
 export default App;
+
