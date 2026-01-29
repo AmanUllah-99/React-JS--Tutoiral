@@ -1,14 +1,13 @@
- 
+import React from 'react'
 import './App.css'
-import VITE_APPWRITE_URL from './conf/conf'
+ 
+ 
 
 function App() {
-  console.log(import.meta.env.VITE_APPWRITE_URL);
   
- 
   return (
     <>
-      <h1 className=' bg-gray-500'>Blog App</h1>
+      <div className='h-screen bg-gray-700  text-center  font-bold text-white pt-6'> Blog App</div>
     </>
   )
 }
