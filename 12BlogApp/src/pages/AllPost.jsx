@@ -9,8 +9,10 @@ function AllPost() {
 
   useEffect(() => {
     appwriteService.getPosts([]).then((posts) => {
+      console.log('AllPost - getPosts response:', posts);
       if (posts) {
-        setPosts(posts.documents)
+        // New TablesDB API uses 'rows' instead of 'documents'
+        setPosts(posts.rows || posts.documents || [])
 
       }
     }).catch((err) => console.error('getPosts error', err))
