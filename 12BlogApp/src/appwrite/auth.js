@@ -10,26 +10,46 @@ export class AuthService {
 
     constructor() {
         this.client
-            .setEndpoint(conf.appwriteURL)
-            .setProject(conf.appwriteProjectId)
-        this.account = new Account(this.client);
+        .setProject(conf.appwriteProjectId)
+        .setEndpoint(conf.appwriteURL)
+        this.account= new Account(this.client);
     }
     ///////////////////////////   In  Users Account Session
     async createAccount({ email, password, name }) {
         try {
-            const userAccount = await this.account.create(ID.unique(), email, password, name);
+            const userAccount = await this.account.create(
+                ID.unique(),
+                email, 
+                password
+            );
             if (userAccount) {
-                /////call another method
-                return this.userLogin({ email, password });
+                /////call another method to login
+                await this.userLogin({ email, password });
+                // Update user name after login
+                if (name) {
+                    await this.updateUserName(name);
+                }
+                // Return the user account with userId ($id)
+                return userAccount;
 
             } else {
                 return userAccount;
             }
 
         } catch (error) {
-            console.error(' Appwirte Service :  createAccount failed:', error);
+            console.log(' Appwirte Service :  createAccount failed:', error);
             throw error
 
+        }
+    }
+
+    /////////////////////// Update User Name
+    async updateUserName(name) {
+        try {
+            return await this.account.updateName({ name })
+        } catch (error) {
+            console.log(' Appwirte Service :  updateUserName error:', error);
+            throw error;
         }
     }
 
@@ -38,9 +58,9 @@ export class AuthService {
     async userLogin({ email, password }) {
         try {
 
-            return await this.account.createEmailPasswordSession(email, password)
+            return await this.account.createEmailPasswordSession({email, password})
         } catch (error) {
-            console.error('  Appwirte Service :  userLogin Failed:', error);
+            console.log('  Appwirte Service :  userLogin Failed:', error);
             throw error
 
 
@@ -51,15 +71,16 @@ export class AuthService {
 
     async getCurrentUser() {
         try {
-            return await this.account.get();
-
-        } catch (error) {
-            console.error(' Appwirte Service :  getCurrentUser error  :', error);
-            throw error
-
+            const user = await this.account.get()
+            console.log('getcurrentuser',user);
+            
+            return user;
+        }catch (error) {
+            console.log(' Appwirte Service :  getCurrentUser error  :', error);
+            throw error;
         }
 
-    };
+    }
 
     ///////////////////////// In User Logged-out  Session
 
@@ -68,7 +89,7 @@ export class AuthService {
             return await this.account.deleteSessions();
 
         } catch (error) {
-            console.error(' Appwirte Service :  logout  error:', error);
+            console.log(' Appwirte Service :  logout  error:', error);
             throw error
         }
     }
@@ -78,10 +99,10 @@ export class AuthService {
     async updateUserPassword(newPassword, oldPassword) {
 
         try {
-            return await this.account.updatePassword(newPassword, oldPassword)
+            return await this.account.updatePassword({newPassword, oldPassword})
 
         } catch (error) {
-            console.error('appwrite Service :: updateUserPassword:: ', error);
+            console.log('appwrite Service :: updateUserPassword:: ', error);
 
             throw error;
 
@@ -92,9 +113,6 @@ export class AuthService {
     }
 
 }
-
-
-
 
 ///// create a object to store above class. 
 const authService = new AuthService();

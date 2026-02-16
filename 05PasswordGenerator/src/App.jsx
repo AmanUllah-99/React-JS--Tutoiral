@@ -35,7 +35,7 @@ function App() {
   }
 
   useEffect(() => {
-    passwordGenerator   // to call passwordgenerator() in this from then a little problem
+    passwordGenerator()   // to call passwordgenerator() in this from then a little problem
   },
 
     [length, numAllowed, charAllowed, passwordGenerator])
